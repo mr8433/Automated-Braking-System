@@ -1,0 +1,142 @@
+#include <Arduino.h>
+
+//Declare all the variables being used here:
+int IRA;
+int IRB;
+int IRC;
+
+int LFlag;
+int CFlag;
+int RFlag;
+
+//Declare all the functions being used here:
+void MR();
+void ML();
+void MF();
+void RE();
+void setup()
+{
+  // put your setup code here, to run once:
+ pinMode(6, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+
+ digitalWrite(7, HIGH);
+ digitalWrite(8, HIGH);
+
+  Serial.begin(115200);
+}
+
+void loop()
+{
+  // put your main code here, to run repeatedly:
+  IRA = analogRead(A0);
+  IRB = analogRead(A1);
+  IRC = analogRead(A2);
+
+  if (IRB < 200)
+  {
+    LFlag = 1;
+  }
+  else
+  {
+    LFlag = 0;
+  }
+
+ if (IRC < 200)
+  {
+    RFlag = 1;
+  }
+   else
+  {
+    RFlag = 0;
+  }
+
+  if (IRA < 200)
+  {
+    CFlag = 1;
+  }
+  else
+  {
+    CFlag = 0;
+  }
+
+  if ((LFlag == 1) || (RFlag == 1) || (CFlag == 1))
+  {
+
+    if (CFlag == 1)
+    {
+      if (LFlag == 1)
+      {
+        MR();
+      }
+
+      else if (RFlag == 1)
+        ML();
+      else
+        ML();
+    }
+    else if (LFlag == 1)
+    {
+      MR();
+    }
+    else if (RFlag == 1)
+    {
+      ML();
+    }
+    else
+    {
+      ML();
+    }
+  }
+
+ else
+  {
+    MF();
+  }
+}
+
+//Function definitions go here:
+void RE()
+{
+  Serial.println("Backing up");
+  digitalWrite(9, LOW);
+  analogWrite(6, 75);
+  analogWrite(11, 75);
+  digitalWrite(10, LOW);
+  delay(1000);
+}
+
+void MR()
+{
+  Serial.println("Right");
+ RE();
+  digitalWrite(6, LOW);
+  digitalWrite(9, LOW);
+  digitalWrite(11, LOW);
+  analogWrite(10, 350);
+  delay(300);
+}
+
+void ML()
+{
+  Serial.println("Left");
+  RE();
+  analogWrite(9, 350);
+  digitalWrite(6, LOW);
+  digitalWrite(11, LOW);
+  digitalWrite(10, LOW);
+  delay(300);
+}
+
+void MF()
+{
+  Serial.println("Forward");
+  analogWrite(9, 75);
+  digitalWrite(6, LOW);
+  digitalWrite(11, LOW);
+  analogWrite(10, 75);
